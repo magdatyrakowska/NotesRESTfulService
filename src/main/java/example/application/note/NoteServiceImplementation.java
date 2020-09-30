@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of service interface
+ */
 @Service
 public class NoteServiceImplementation implements NoteService{
 
