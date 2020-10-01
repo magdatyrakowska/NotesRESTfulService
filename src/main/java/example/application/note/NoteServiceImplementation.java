@@ -1,5 +1,8 @@
 package example.application.note;
 
+import example.application.note.exceptions.NoNotesException;
+import example.application.note.exceptions.NotValidDataException;
+import example.application.note.exceptions.NoteNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,26 +23,35 @@ public class NoteServiceImplementation implements NoteService{
     }
 
     @Override
-    public List<Note> getAllNotes() {
+    public List<Note> getAllNotes() throws NoNotesException {
         List<Note> notes = new ArrayList<>();
         noteRepository.findAll().forEach(notes::add);
+        if(notes.isEmpty() || notes.size() == 0) {
+            throw new NoNotesException();
+        }
         return notes;
     }
 
     @Override
-    public Note getNote(Long id) {
-        Note note = noteRepository.findById(id).orElse(null);
+    public Note getNote(Long id) throws NoteNotFoundException {
+        Note note = noteRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
         return note;
     }
 
     @Override
-    public void addNote(Note note) {
+    public void addNote(Note note) throws NotValidDataException {
+        note.checkValid();
         noteRepository.save(note);
     }
 
     @Override
-    public void updateNote(Long id, Note note) {
-        Note updatedNote = noteRepository.findById(id).get();
+    public void updateNote(Long id, Note note) throws NoteNotFoundException, NotValidDataException {
+        Note updatedNote = noteRepository.findById(id)
+                .orElseThrow(() -> new NoteNotFoundException(id));
+
+        note.checkValid();
+
         updatedNote.setTitle(note.getTitle());
         updatedNote.setContent(note.getContent());
 
@@ -47,7 +59,11 @@ public class NoteServiceImplementation implements NoteService{
     }
 
     @Override
-    public void deleteNote(Long id) {
-        noteRepository.deleteById(id);
+    public void deleteNote(Long id) throws NoteNotFoundException {
+        if (noteRepository.existsById(id)) {
+            noteRepository.deleteById(id);
+        } else {
+            throw new NoteNotFoundException(id);
+        }
     }
 }

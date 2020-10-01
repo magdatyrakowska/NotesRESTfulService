@@ -1,6 +1,7 @@
 package example.application.note;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Manages all operations on the Notes repository
