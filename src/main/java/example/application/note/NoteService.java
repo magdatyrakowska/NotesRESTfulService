@@ -24,15 +24,16 @@ public interface NoteService {
     /**
      * Adds given note to a repository
      * @param note Note object to be added
+     *             TODO: return
      */
-    void addNote(Note note);
+    Note addNote(Note note);
 
     /**
      * Updates note of a given Id number with parameters from given Note object
      * @param id Long number identifying Note to be updated
      * @param note Note object containing changes to update
      */
-    void updateNote(Long id, Note note);
+    Note updateNote(Long id, Note note);
 
     /**
      * Deletes note of a given Id number from repository

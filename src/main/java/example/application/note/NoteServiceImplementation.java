@@ -1,6 +1,5 @@
 package example.application.note;
 
-import example.application.note.exceptions.NoNotesException;
 import example.application.note.exceptions.NotValidDataException;
 import example.application.note.exceptions.NoteNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +22,10 @@ public class NoteServiceImplementation implements NoteService{
     }
 
     @Override
-    public List<Note> getAllNotes() throws NoNotesException {
+    public List<Note> getAllNotes() {
         List<Note> notes = new ArrayList<>();
-        noteRepository.findAll().forEach(notes::add);
-        if(notes.isEmpty() || notes.size() == 0) {
-            throw new NoNotesException();
-        }
+        noteRepository.findAll()
+                .forEach(notes::add);
         return notes;
     }
 
@@ -40,13 +37,14 @@ public class NoteServiceImplementation implements NoteService{
     }
 
     @Override
-    public void addNote(Note note) throws NotValidDataException {
+    public Note addNote(Note note) throws NotValidDataException {
         note.checkValid();
-        noteRepository.save(note);
+        Note savedNote = noteRepository.save(note);
+        return savedNote;
     }
 
     @Override
-    public void updateNote(Long id, Note note) throws NoteNotFoundException, NotValidDataException {
+    public Note updateNote(Long id, Note note) throws NoteNotFoundException, NotValidDataException {
         Note updatedNote = noteRepository.findById(id)
                 .orElseThrow(() -> new NoteNotFoundException(id));
 
@@ -55,7 +53,8 @@ public class NoteServiceImplementation implements NoteService{
         updatedNote.setTitle(note.getTitle());
         updatedNote.setContent(note.getContent());
 
-        noteRepository.save(updatedNote);
+        Note savedNote = noteRepository.save(updatedNote);
+        return savedNote;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package example.application.note;
 
-import example.application.note.exceptions.NoNotesException;
 import example.application.note.exceptions.NotValidDataException;
 import example.application.note.exceptions.NoteNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,40 +16,41 @@ import java.util.List;
 public class NoteController {
 
     private NoteService noteService;
+    private NoteModelAssembler noteModelAssembler;
 
     @Autowired
-    public NoteController(NoteServiceImplementation noteService) {
+    public NoteController(NoteServiceImplementation noteService, NoteModelAssembler noteModelAssembler) {
         this.noteService = noteService;
+        this.noteModelAssembler = noteModelAssembler;
     }
 
     /**
-     * Returns list of all notes or error message in case there are no notes in repository.
+     * Returns list of all notes.
      *
-     * @return List with Note objects or error message
+     * @return List with Note objects.
      */
     @GetMapping("/notes")
     public ResponseEntity<Object> listNotes() {
-        try {
-            List<Note> notes = noteService.getAllNotes();
-            return new ResponseEntity<>(notes, HttpStatus.OK);
-        } catch (NoNotesException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+        List<Note> notes = noteService.getAllNotes();
+        return new ResponseEntity<>(
+                noteModelAssembler.toCollectionModel(notes),
+                HttpStatus.OK
+        );
     }
 
     /**
-     * Returns specific one note or error message in case there is no such note.
+     * Returns specific one note or error status in case there is no such note.
      *
      * @param id Long number identifying requested note
-     * @return Note object matching given Id or error message
+     * @return Note object matching given Id or error status
      */
     @GetMapping("/notes/{id}")
     public ResponseEntity<Object> getNoteById(@PathVariable Long id) {
         try {
             Note note = noteService.getNote(id);
-            return new ResponseEntity<>(note, HttpStatus.OK);
+            return new ResponseEntity<>(noteModelAssembler.toModel(note), HttpStatus.OK);
         } catch (NoteNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -68,8 +68,8 @@ public class NoteController {
         } catch (NotValidDataException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
-        String message = "Note added successfully";
-        return new ResponseEntity<>(message, HttpStatus.CREATED);
+        Note savedNote = noteService.addNote(note);
+        return new ResponseEntity<>(noteModelAssembler.toModel(savedNote), HttpStatus.CREATED);
     }
 
     /**
@@ -80,13 +80,13 @@ public class NoteController {
      * @param note Note object with changes to update
      * @param id   Long number identifying note to be updated or error message
      * @return message with success or error description
+     * // TODO return
      */
     @PutMapping("/notes/{id}")
     public ResponseEntity<Object> updateNote(@RequestBody Note note, @PathVariable Long id) {
         try {
-            noteService.updateNote(id, note);
-            String message = "Note " + id + " successfully updated";
-            return new ResponseEntity<>(message, HttpStatus.OK);
+            Note updatedNote = noteService.updateNote(id, note);
+            return new ResponseEntity<>(noteModelAssembler.toModel(updatedNote), HttpStatus.OK);
         } catch (NoteNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (NotValidDataException e) {
@@ -102,11 +102,11 @@ public class NoteController {
      * @return message with success or error description
      */
     @DeleteMapping("/notes/{id}")
-    public ResponseEntity<Object> deleteTopic(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteNote(@PathVariable Long id) {
         try {
             noteService.deleteNote(id);
             String message = "Note " + id + " successfully deleted";
-            return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(message, HttpStatus.OK);
         } catch (NoteNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
