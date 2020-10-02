@@ -25,6 +25,7 @@ public class NoteController {
 
     /**
      * Returns list of all notes or error message in case there are no notes in repository.
+     *
      * @return List with Note objects or error message
      */
     @GetMapping("/notes")
@@ -32,13 +33,14 @@ public class NoteController {
         try {
             List<Note> notes = noteService.getAllNotes();
             return new ResponseEntity<>(notes, HttpStatus.OK);
-        } catch(NoNotesException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
+        } catch (NoNotesException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     /**
      * Returns specific one note or error message in case there is no such note.
+     *
      * @param id Long number identifying requested note
      * @return Note object matching given Id or error message
      */
@@ -67,7 +69,7 @@ public class NoteController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
         String message = "Note added successfully";
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     /**
@@ -104,7 +106,7 @@ public class NoteController {
         try {
             noteService.deleteNote(id);
             String message = "Note " + id + " successfully deleted";
-            return new ResponseEntity<>(message, HttpStatus.OK);
+            return new ResponseEntity<>(message, HttpStatus.NO_CONTENT);
         } catch (NoteNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
