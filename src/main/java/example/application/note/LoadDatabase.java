@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 public class LoadDatabase {
 
     @Bean
-    CommandLineRunner initDatabase(NoteRepository noteRepository) {
+    CommandLineRunner initDatabase(NoteService noteService) {
         return args -> {
-            noteRepository.save(new Note( "title1", "content 1"));
-           // noteRepository.save(new Note( "title2", "content 2"));
+            noteService.addNote(new Note( "title1", "content 1"));
+            noteService.addNote(new Note( "title2", "content 2"));
         };
     }
 }

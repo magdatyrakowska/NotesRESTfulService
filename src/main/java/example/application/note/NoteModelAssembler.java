@@ -24,6 +24,8 @@ public class NoteModelAssembler extends RepresentationModelAssemblerSupport<Note
         noteModel.setId(note.getId());
         noteModel.setTitle(note.getTitle());
         noteModel.setContent(note.getContent());
+        noteModel.setCreated(note.getCreated());
+        noteModel.setModified(note.getModified());
 
         return noteModel;
     }
