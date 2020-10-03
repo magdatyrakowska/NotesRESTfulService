@@ -25,16 +25,16 @@ public class NoteServiceImplementation implements NoteService {
     @Override
     public List<Note> getAllNotes() {
         List<Note> notes = new ArrayList<>();
-        noteRepository.findAll().forEach(notes::add);
+        noteRepository.findByActive(true).forEach(notes::add);
 
         return notes.stream()
-                .filter(Note::getActive)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Note getNote(Long id) throws NoteNotFoundException {
-        Note note = getNoteIfExistOrThrowException(id);
+        Note note = noteRepository.findByIdAndActive(id, true)
+                .orElseThrow(() -> new NoteNotFoundException(id));
         return note;
     }
 
@@ -50,7 +50,9 @@ public class NoteServiceImplementation implements NoteService {
 
     @Override
     public Note updateNote(Long id, Note note) throws NoteNotFoundException, NotValidDataException {
-        Note updatedNote = getNoteIfExistOrThrowException(id);
+        Note updatedNote;
+        updatedNote = noteRepository.findByIdAndActive(id, true)
+                .orElseThrow(() -> new NoteNotFoundException(id));
         note.checkValid();
 
         Note archivedNote = new Note(updatedNote);
@@ -67,19 +69,10 @@ public class NoteServiceImplementation implements NoteService {
 
     @Override
     public void deleteNote(Long id) throws NoteNotFoundException {
-        Note deletedNote = getNoteIfExistOrThrowException(id);
+        Note deletedNote = noteRepository.findByIdAndActive(id, true)
+                .orElseThrow(() -> new NoteNotFoundException(id));
         deletedNote.setActive(false);
         noteRepository.save(deletedNote);
-    }
-
-    private Note getNoteIfExistOrThrowException(Long id) {
-        Note note;
-        note = noteRepository.findById(id)
-                .orElseThrow(() -> new NoteNotFoundException(id));
-        if (!note.getActive()) {
-            throw new NoteNotFoundException(id);
-        }
-        return note;
     }
 
     private Note setOriginalId(Note savedNote) {
