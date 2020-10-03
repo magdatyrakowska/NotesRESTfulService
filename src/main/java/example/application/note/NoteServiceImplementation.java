@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implementation of service interface
+ * Implementation of NoteService interface
  */
 @Service
 public class NoteServiceImplementation implements NoteService {
@@ -25,10 +25,11 @@ public class NoteServiceImplementation implements NoteService {
     @Override
     public List<Note> getAllNotes() {
         List<Note> notes = new ArrayList<>();
-        noteRepository.findAll()
-                .forEach(notes::add);
+        noteRepository.findAll().forEach(notes::add);
 
-        return notes.stream().filter(Note::getActive).collect(Collectors.toList());
+        return notes.stream()
+                .filter(Note::getActive)
+                .collect(Collectors.toList());
     }
 
     @Override

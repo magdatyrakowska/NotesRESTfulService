@@ -27,31 +27,31 @@ public class NoteController {
     /**
      * Returns list of all notes.
      *
-     * @return List with Note objects.
+     * @return ResponseEntity with List of Notes and HttpStatus Ok.
      */
     @GetMapping("/notes")
     public ResponseEntity<Object> listNotes() {
         List<Note> notes = noteService.getAllNotes();
         return new ResponseEntity<>(
                 noteModelAssembler.toCollectionModel(notes),
-                HttpStatus.OK
-        );
+                HttpStatus.OK);
     }
 
     /**
      * Returns specific one note or error status in case there is no such note.
      *
      * @param id Long number identifying requested note
-     * @return Note object matching given Id or error status
+     * @return ResponseEntity with Note object matching given Id or error status
      */
     @GetMapping("/notes/{id}")
     public ResponseEntity<Object> getNoteById(@PathVariable Long id) {
+        Note note;
         try {
-            Note note = noteService.getNote(id);
-            return new ResponseEntity<>(noteModelAssembler.toModel(note), HttpStatus.OK);
+            note = noteService.getNote(id);
         } catch (NoteNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+        return new ResponseEntity<>(noteModelAssembler.toModel(note), HttpStatus.OK);
     }
 
     /**
@@ -59,7 +59,7 @@ public class NoteController {
      * Error is send when note data is not valid.
      *
      * @param note Note object to be added
-     * @return message with success or error description
+     * @return ResponseEntity with added note in case of success or error description
      */
     @PostMapping("/notes")
     public ResponseEntity<Object> addNote(@RequestBody Note note) {
@@ -78,20 +78,20 @@ public class NoteController {
      * are not valid.
      *
      * @param note Note object with changes to update
-     * @param id   Long number identifying note to be updated or error message
-     * @return message with success or error description
-     * // TODO return
+     * @param id Long number identifying note to be updated or error message
+     * @return ResponseEntity with updated note in case of success or error description
      */
     @PutMapping("/notes/{id}")
     public ResponseEntity<Object> updateNote(@RequestBody Note note, @PathVariable Long id) {
+        Note updatedNote;
         try {
-            Note updatedNote = noteService.updateNote(id, note);
-            return new ResponseEntity<>(noteModelAssembler.toModel(updatedNote), HttpStatus.OK);
+            updatedNote = noteService.updateNote(id, note);
         } catch (NoteNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (NotValidDataException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
+        return new ResponseEntity<>(noteModelAssembler.toModel(updatedNote), HttpStatus.OK);
     }
 
     /**
@@ -99,17 +99,16 @@ public class NoteController {
      * Otherwise send error message.
      *
      * @param id Long number identifying note to be deleted
-     * @return message with success or error description
+     * @return ResponseEntity with HttpStatus no content or error description
      */
     @DeleteMapping("/notes/{id}")
     public ResponseEntity<Object> deleteNote(@PathVariable Long id) {
         try {
             noteService.deleteNote(id);
-            String message = "Note " + id + " successfully deleted";
-            return new ResponseEntity<>(message, HttpStatus.OK);
         } catch (NoteNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
+        return ResponseEntity.noContent().build();
     }
 
 }

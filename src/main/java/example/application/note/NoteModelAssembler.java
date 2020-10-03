@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
+/**
+ * Assembler converting Notes objects to NoteModel with links.
+ */
 @Component
 public class NoteModelAssembler extends RepresentationModelAssemblerSupport<Note, NoteModel> {
 
