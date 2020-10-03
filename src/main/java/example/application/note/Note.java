@@ -60,7 +60,7 @@ public class Note {
             throw new EmptyNoteException();
         } else if (title.length() > 256) {
             throw new TooLongTitleException();
-        } else if (content.length() > 65536) {
+        } else if (content.length() > Integer.MAX_VALUE) {
             throw new TooLongContentException();
         }
     }
