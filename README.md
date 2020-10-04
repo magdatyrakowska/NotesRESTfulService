@@ -10,7 +10,7 @@ to check whole history of all entries.
 Response body formatting is application/hal+json. 
 Every entry is followed by a link to a resource, following HATEOAS restrictions.
 
-###Table of contents
+### Table of contents
 1. [What is required for running the project](#running-project)
 2. [Database setup for the project](#database-setup)
 3. [Project build and run setup](#project-setup)
