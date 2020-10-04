@@ -41,7 +41,7 @@ spring.datasource.username=[SQL_DATABASE_USERNAME]
 spring.datasource.password=[SQL_DATABASE_PASSWORD]
 ```
 
-Table would be during first run of application. 
+Table would be created during first run of application. 
 
 ## Project build and run setup <a name="project-setup"/>
 
