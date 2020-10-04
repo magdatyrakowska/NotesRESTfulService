@@ -87,7 +87,7 @@ public class NoteController {
         try {
             updatedNote = noteService.updateNote(id, note);
         } catch (NoteNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         } catch (NotValidDataException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
         }
@@ -106,7 +106,7 @@ public class NoteController {
         try {
             noteService.deleteNote(id);
         } catch (NoteNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
     }

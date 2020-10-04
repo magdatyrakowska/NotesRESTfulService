@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -11,7 +12,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class NoteControllerTest {
+public class NoteControllerTest {
+
 
     private final MockMvc mockMvc;
 
@@ -21,24 +23,35 @@ class NoteControllerTest {
     }
 
     @Test
-    void ListAllNotesWhenRepoIsNotEmptyGivesStatusOk() throws Exception {
+    void ListAllNotesWhenRepoIsEmptyGivesStatusOk() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/notes"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void GetOneExistingNoteGivesStatusOk() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/notes/1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
+    void GetNotExistingNoteGivesStatusNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/notes/99"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+
+    @Test
+    void PutNonExistingNoteGivesStatusNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.put("/notes/99")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"title\": \"new title\", \"content\": \"new content\"}"))
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andDo(MockMvcResultHandlers.print());
     }
 
     @Test
-    void GetOneNonExistingNoteGivesStatusNotFound() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.get("/notes/3"))
+    void DeleteNonExistingNoteGivesStatusNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/notes/1"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andDo(MockMvcResultHandlers.print());
     }
+
 
 }
