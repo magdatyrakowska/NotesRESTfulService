@@ -33,7 +33,7 @@ public class ArchiveNoteController {
      *
      * @return ResponseEntity with List of Notes and HttpStatus Ok.
      */
-    @GetMapping("/archive/notes")
+    @GetMapping("/archive")
     public ResponseEntity<Object> listNotes() {
         List<Note> notes = archiveNoteService.getAllNotes();
         return new ResponseEntity<>(
@@ -48,7 +48,7 @@ public class ArchiveNoteController {
      * @return ResponseEntity with List of Notes matching given Id and HttpStatus Ok;
      * In case there are no notes with that originalId it return HttpStatus not found.
      */
-    @GetMapping("/archive/notes/{originalId}")
+    @GetMapping("/archive/{originalId}")
     public ResponseEntity<Object> getNoteById(@PathVariable Long originalId) {
         List<Note> notes;
         try {

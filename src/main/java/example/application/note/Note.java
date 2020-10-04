@@ -16,17 +16,20 @@ public class Note {
     @Id
     @GeneratedValue
     private Long id;
-
     @Column
     private String title;
-
     @Column
     @Lob
     private String content;
+    @Column
     private LocalDate created;
+    @Column
     private LocalDate modified;
+    @Column
     private Long version;
+    @Column
     private Long originalId;
+    @Column
     private Boolean active;
 
     public Note() {
@@ -56,7 +59,7 @@ public class Note {
     }
 
     public void checkValid() throws NotValidDataException {
-        if (title.isBlank() || content.isBlank()) {
+        if (title.length() == 0 || content.length() == 0) {
             throw new EmptyNoteException();
         } else if (title.length() > 256) {
             throw new TooLongTitleException();
